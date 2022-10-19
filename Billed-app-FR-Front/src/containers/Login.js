@@ -18,7 +18,7 @@ export default class Login {
   handleSubmitEmployee = e => {
     e.preventDefault()
     const user = {
-      type: "Admin",
+      type: "Employee",
       email: e.target.querySelector(`input[data-testid="employee-email-input"]`).value,
       password: e.target.querySelector(`input[data-testid="employee-password-input"]`).value,
       status: "connected"

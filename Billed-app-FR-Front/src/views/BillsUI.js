@@ -18,10 +18,23 @@ const row = (bill) => {
     </tr>
     `)
   }
-
+/*
 const rows = (data) => {
   return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
-}
+} */
+/*  rajout trie date desc */
+const rows = (data) => {
+  const sortDescByDate = (a, b) => (a.date < b.date ? 1 : -1)
+  if (data && data.length) {
+    const dataSorted = [...data].sort(sortDescByDate);
+    return dataSorted.map((bill) => row(bill)).join("");
+  }
+  return [];
+} 
+
+
+
+
 
 export default ({ data: bills, loading, error }) => {
   
