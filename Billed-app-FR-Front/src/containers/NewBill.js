@@ -2,7 +2,7 @@ import { ROUTES_PATH } from '../constants/routes.js'
 import Logout from "./Logout.js"
 
 export default class NewBill {
-  constructor({ document, onNavigate, store, localStorage }) {
+    constructor({ document, onNavigate, store, localStorage }) {
     this.document = document
     this.onNavigate = onNavigate
     this.store = store
@@ -20,6 +20,37 @@ export default class NewBill {
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
+    /* récupérer l'extension du fichier   */
+    const fileExtension = fileName.split(".")[fileName.split(".").length-1]
+    /* si l'extension est au format autorisé. */
+    if(fileExtension ==="jpg" || fileExtension ==="jpeg" || fileExtension ==="png"){
+      const formData = new FormData()
+      const email = JSON.parse(localStorage.getItem("user")).email
+      formData.append('file', file)
+      formData.append('email', email)
+      this.store
+        .bills()
+        .create({
+          data: formData,
+          headers: {
+            noContentType: true
+          }
+        })
+        .then(({fileUrl, key}) => {
+          console.log(fileUrl)
+          this.billId = key
+          this.fileUrl = fileUrl
+          this.fileName = fileName
+        }).catch(error => console.error(error))
+      /* pas d'affichage message erreur de format d'image  */
+      this.document.querySelector(".error-msg").classList.remove("visible")
+    } else {
+      /* affichage message "Formats d'images autorisés : *.jpg, *.jpeg ou *.png."  */
+      this.document.querySelector(".error-msg").classList.add("visible")
+      this.document.querySelector(`input[data-testid="file"]`).value = "";
+    }
+  
+    /*
     const formData = new FormData()
     const email = JSON.parse(localStorage.getItem("user")).email
     formData.append('file', file)
@@ -38,7 +69,7 @@ export default class NewBill {
         this.billId = key
         this.fileUrl = fileUrl
         this.fileName = fileName
-      }).catch(error => console.error(error))
+      }).catch(error => console.error(error)) */
   }
   handleSubmit = e => {
     e.preventDefault()

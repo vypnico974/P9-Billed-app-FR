@@ -1,5 +1,5 @@
 export const formatDate = (dateStr) => {
-  /* ajout d'un test format date pour éviter erreur   */
+  /* ajout d'un test format date pour éviter bug   */
   if (isNaN(Date.parse(dateStr)) || dateStr === ''){
     return '1 Jan. 01'
   } 
@@ -18,6 +18,7 @@ export const formatStatus = (status) => {
     case "accepted":
       return "Accepté"
     case "refused":
-      return "Refused"
+    //  return "Refused"
+      return "Refusé"
   }
 }
