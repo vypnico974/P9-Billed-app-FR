@@ -24,7 +24,7 @@ const rows = (data) => {
 } */
 /*  rajout trie date desc */
 const rows = (data) => {
-  const sortDescByDate = (a, b) => (a.date < b.date ? 1 : -1)
+  const sortDescByDate = (a, b) => (a.date < b.date ? -1 : 1)
   if (data && data.length) {
     const dataSorted = [...data].sort(sortDescByDate);
     return dataSorted.map((bill) => row(bill)).join("");
