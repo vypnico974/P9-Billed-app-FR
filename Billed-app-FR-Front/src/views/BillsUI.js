@@ -1,6 +1,7 @@
 import VerticalLayout from './VerticalLayout.js'
 import ErrorPage from "./ErrorPage.js"
 import LoadingPage from "./LoadingPage.js"
+import {formatDate} from "../app/format.js"
 
 import Actions from './Actions.js'
 
@@ -9,7 +10,7 @@ const row = (bill) => {
     <tr>
       <td>${bill.type}</td>
       <td>${bill.name}</td>
-      <td>${bill.date}</td>
+      <td>${formatDate(bill.date)}</td>
       <td>${bill.amount} €</td>
       <td>${bill.status}</td>
       <td>
@@ -18,19 +19,49 @@ const row = (bill) => {
     </tr>
     `)
   }
-/*
-const rows = (data) => {
-  return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
-} */
+
+// const rows = (data) => {
+//   return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
+// } 
 /*  rajout trie date desc */
-const rows = (data) => {
-  const sortDescByDate = (a, b) => (a.date < b.date ? -1 : 1)
+export const rowsData = (data) => {
+  const sortDescByDate = (a, b) => (a.date < b.date ? 1 : -1)
   if (data && data.length) {
-    const dataSorted = [...data].sort(sortDescByDate);
-    return dataSorted.map((bill) => row(bill)).join("");
+        return [...data].sort(sortDescByDate)
   }
-  return [];
+   return [];
 } 
+//  const rows = (data) => {
+//   const dataSortedFormat = []
+//   const sortDescByDate = (a, b) => (a.date < b.date ? 1 : -1)
+//   if (data && data.length) {
+//     const dataSorted = [...data].sort(sortDescByDate)
+//     for (const dataLine of dataSorted) {
+//       dataLine.date = formatDate(dataLine.date)
+//       console.log(dataLine.date)
+//       dataSortedFormat.push(dataLine)
+//     }
+//     return dataSortedFormat.map((bill) => row(bill)).join("")
+//   }
+//    return [];
+// }
+// export const rowsData = (data) => {
+//   if (data && data.length) {
+//       data.map((data) => {
+//           data.date = new Date(data.date)
+//       })
+      
+//       return data.sort((a, b) => b.date - a.date)
+//   } else return []
+// }
+
+const rows = (data) => {
+  if (data && data.length) {
+      const datas = rowsData(data)
+      return datas.map((bill) => row(bill)).join('')
+  } else return []
+}
+
 
 export default ({ data: bills, loading, error }) => {
   

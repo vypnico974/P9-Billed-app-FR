@@ -1,5 +1,5 @@
 export const formatDate = (dateStr) => {
-  /* ajout d'un test format date pour éviter bug   */
+  /*  si format entrée incorrect afin d'éviter bug   */
   if (isNaN(Date.parse(dateStr)) || dateStr === ''){
     return '1 Jan. 01'
   } 
@@ -10,7 +10,8 @@ export const formatDate = (dateStr) => {
   const month = mo.charAt(0).toUpperCase() + mo.slice(1)
   return `${parseInt(da)} ${month.substr(0,3)}. ${ye.toString().substr(2,4)}`
 }
- 
+
+
 export const formatStatus = (status) => {
   switch (status) {
     case "pending":

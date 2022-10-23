@@ -11,19 +11,20 @@ import { ROUTES, ROUTES_PATH } from "../constants/routes"
 import {localStorageMock} from "../__mocks__/localStorage.js";
 import mockStore from "../__mocks__/store"
 import router from "../app/Router.js";
+import { rowsData } from '../views/BillsUI.js'
 
 jest.mock("../app/store", () => mockStore)
 
 describe("Given I am connected as an employee", () => {
-    /* Tests sur la page des factures  */
+    
    describe("When I am on Bills Page", () => {
-    /* Test surbrillance de l'icône bill sur la bonne page  */
+
+    /* Test surbrillance de l'icône note de frais  */
     test("Then bill icon in vertical layout should be highlighted", async () => {
+      /* mock connexion employé  */
       Object.defineProperty(window, "localStorage", {value: localStorageMock, });
       window.localStorage.setItem("user", JSON.stringify({ type: "Employee",}));
-      const root = document.createElement("div")
-      root.setAttribute("id", "root")
-      document.body.append(root)
+      document.body.innerHTML='<div id="root"></div>'
       router()
       window.onNavigate(ROUTES_PATH.Bills)
       await waitFor(() => screen.getByTestId('icon-window'))
@@ -34,18 +35,29 @@ describe("Given I am connected as an employee", () => {
 
     /* Test tri dates ordre décroissant  */
     test("Then bills should be ordered from earliest to latest", () => {
-      document.body.innerHTML = BillsUI({ data: bills })
-      const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i).map(a => a.innerHTML)
-     // const antiChrono = (a, b) => ((a < b) ? 1 : -1)
+    //   document.body.innerHTML = BillsUI({ data: bills })
+    //   const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i).map(a => a.innerHTML)
+    //  // const antiChrono = (a, b) => ((a < b) ? 1 : -1)
      /* date desc  */
-     const antiChrono = (a, b) => ((a < b) ? -1 : 1)
-      const datesSorted = [...dates].sort(antiChrono)
-      /* vérification que l'affichage des dates est par ordre décroissant  */     
-      expect(dates).toEqual(datesSorted)
+    //  const antiChrono = (a, b) => ((a < b) ? 1 : -1)
+    //   const datesSorted = [...dates].sort(antiChrono)
+    //   /* vérification que l'affichage des dates est par ordre décroissant  */     
+    //   expect(dates).toEqual(datesSorted)
+    
+    /* récupérer les données enregistrées dans l'objet bills pour effectuer le test  */
+    let sortedBills = bills.slice()    
+    /* trie date desc des données par la fonction rowsData  */
+    let billsList = rowsData(bills)
+    /*  trie date desc des données   */
+    sortedBills.map((bill) => (bill.date = new Date(bill.date)))
+    sortedBills = sortedBills.sort((a, b) => b.date - a.date)    
+    /* vérification correspondante dates est  bien trié pr ordre décroissant  */  
+    expect(billsList).toEqual(sortedBills) 
     })
 
     /* Test d'intégration GET du mock API*/
       test("fetches bills from mock API GET", async () => {
+      /* mock connexion employé  */
       window.localStorage.setItem("user", JSON.stringify({ type: "Employee",}));
       document.body.innerHTML='<div id="root"></div>'
       router()
@@ -64,6 +76,7 @@ describe("Given I am connected as an employee", () => {
     describe("When I click on new bill button ", () => {
       test("Then a modal should open", () => {
         const onNavigate = (pathname) => {document.body.innerHTML = ROUTES({ pathname, }); };
+        /* mock connexion employé  */
         Object.defineProperty(window, "localStorage", {value: localStorageMock, });
         window.localStorage.setItem("user", JSON.stringify({ type: "Employee",}));
         document.body.innerHTML = BillsUI({data: bills,});
@@ -84,6 +97,7 @@ describe("Given I am connected as an employee", () => {
     /* test action et affichage modale quand clic icône oeil bleu */
     describe("When I click on the blue eye icon", () => {
       test("Then modal should be displayed with its content", async () => {
+        /* mock connexion employé  */
         Object.defineProperty(window, 'localStorage', { value: localStorageMock })
         window.localStorage.setItem('user', JSON.stringify({type: 'Employee' }))
         document.body.innerHTML='<div id="root"></div>'
@@ -105,7 +119,43 @@ describe("Given I am connected as an employee", () => {
       })
     })
 
-    /* Test de la gestion d'erreur */
+      /*  erreur sur la page */
+      describe('When there is an error', () => {
+        /*  test présence du message d'erreur */
+        test('Then error page should be displayed', () => {
+            const html = BillsUI({ data: bills, error: true })
+            document.body.innerHTML = html
+            const error = screen.getByTestId('error-message')
+            expect(error).toBeTruthy()
+        })
+    })
+
+     /* Test d'intégration GET */
+     test("fetches bills from mock API GET", async () => {
+      /* mock connexion employé  */
+      window.localStorage.setItem('user', JSON.stringify({ type: 'Employee'}))
+      document.body.innerHTML='<div id="root"></div>'
+      router()
+      window.onNavigate(ROUTES_PATH.Bills)
+      const onNavigate = (pathname) => {document.body.innerHTML = ROUTES({ pathname })}
+      const billsList = new Bills({document, onNavigate, store : mockStore, localStorage: null})
+      const bills = await billsList.getBills()
+      document.body.innerHTML = BillsUI({ data: bills })
+      const billsCount  = await screen.getByTestId("tbody").childElementCount
+      /* Vérification si les 4 bills du mock sont récupérées*/
+      expect(billsCount).toEqual(4)
+    })
+
+    describe('When I am on Bills page but it is loading', () => {
+      /* Test affichage chargement page  */
+      test('Then loading page should be rendered', () => {
+        document.body.innerHTML = BillsUI({ loading: true })
+        /*  vérification affichage du texte 'Loading...'  */
+        expect(screen.getAllByText('Loading...')).toBeTruthy()
+      })
+    })
+
+    /* Test de la gestion d'erreur par API */
     describe("When an error occurs on API", () => {
       beforeEach(() => {
         jest.spyOn(mockStore, "bills")
@@ -114,7 +164,6 @@ describe("Given I am connected as an employee", () => {
         document.body.innerHTML='<div id="root"></div>'
         router()
       })
-
       /* Test message erreur 404 */
       test("fetches bills from an API and fails with 404 message error", async () => {
         mockStore.bills.mockImplementationOnce(() => {
@@ -129,7 +178,6 @@ describe("Given I am connected as an employee", () => {
         /* vérification présence message d'erreur contenant texte  Erreur 404  */
         expect(message).toBeTruthy()
       })
-
       /* Test message erreur 500 */
       test("fetches messages from an API and fails with 500 message error", async () => {
         mockStore.bills.mockImplementationOnce(() => {
