@@ -10,7 +10,7 @@ const row = (bill) => {
     <tr>
       <td>${bill.type}</td>
       <td>${bill.name}</td>
-      <td>${formatDate(bill.date)}</td>
+      <td>${bill.date}</td>     
       <td>${bill.amount} €</td>
       <td>${bill.status}</td>
       <td>
@@ -24,13 +24,13 @@ const row = (bill) => {
 //   return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
 // } 
 /*  rajout trie date desc */
-export const rowsData = (data) => {
-  const sortDescByDate = (a, b) => (a.date < b.date ? 1 : -1)
-  if (data && data.length) {
-        return [...data].sort(sortDescByDate)
-  }
-   return [];
-} 
+// export const rowsData = (data) => {
+//   const sortDescByDate = (a, b) => (a.date < b.date ? 1 : -1)
+//   if (data && data.length) {
+//         return [...data].sort(sortDescByDate)
+//   }
+//    return [];
+// } 
 //  const rows = (data) => {
 //   const dataSortedFormat = []
 //   const sortDescByDate = (a, b) => (a.date < b.date ? 1 : -1)
@@ -45,23 +45,40 @@ export const rowsData = (data) => {
 //   }
 //    return [];
 // }
+
+/* tri dates desc avant creation HTML de bill */
 // export const rowsData = (data) => {
 //   if (data && data.length) {
-//       data.map((data) => {
-//           data.date = new Date(data.date)
-//       })
-      
+//       data.map((data) => {data.date = new Date(data.date)})      
 //       return data.sort((a, b) => b.date - a.date)
 //   } else return []
 // }
+// const rows = (data) => {
+//   if (data && data.length) {
+//       const datas = rowsData(data)
+//       return datas.map((bill) => row(bill)).join('')
+//   } else return []
+// }
+
+/* tri dates desc avant creation HTML de bill */
+// const rows = (data) => {
+//   if (data && data.length) {
+//     return data
+//       .sort((a, b) => ((a.date < b.date) ? 1 : -1))
+//       .map(bill => row(bill))
+//       .join("")
+//   }
+//   return "";
+// }
 
 const rows = (data) => {
-  if (data && data.length) {
-      const datas = rowsData(data)
-      return datas.map((bill) => row(bill)).join('')
-  } else return []
-}
-
+  return data && data.length
+    ? data
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .map((bill) => row(bill))
+        .join("")
+    : "";
+};
 
 export default ({ data: bills, loading, error }) => {
   

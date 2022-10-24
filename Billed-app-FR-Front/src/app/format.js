@@ -1,5 +1,5 @@
 export const formatDate = (dateStr) => {
-  /*  si format entrée incorrect afin d'éviter bug   */
+  /*  si format entrée incorrect  */
   if (isNaN(Date.parse(dateStr)) || dateStr === ''){
     return '1 Jan. 01'
   } 

@@ -35,22 +35,25 @@ export default class NewBill {
       /* affichage message "Formats d'images autorisés : *.jpg, *.jpeg ou *.png."  */
       this.document.querySelector(".error-msg").classList.add("visible")
       this.document.querySelector(`input[data-testid="file"]`).value = "";
+      return
     }
+
+    this.store
+    .bills()
+    .create({
+      data: formData,
+      headers: {
+        noContentType: true
+      }
+    })
+    .then(({fileUrl, key}) => {
+      console.log(fileUrl)
+      this.billId = key
+      this.fileUrl = fileUrl
+      this.fileName = fileName
+    }).catch(error => console.error(error))
   
-       this.store
-      .bills()
-      .create({
-        data: formData,
-        headers: {
-          noContentType: true
-        }
-      })
-      .then(({fileUrl, key}) => {
-        console.log(fileUrl)
-        this.billId = key
-        this.fileUrl = fileUrl
-        this.fileName = fileName
-      }).catch(error => console.error(error))
+
   }
   handleSubmit = e => {
     e.preventDefault()

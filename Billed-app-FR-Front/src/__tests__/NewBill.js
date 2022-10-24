@@ -16,8 +16,7 @@ jest.mock("../app/store", () => mockStore)
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
-
-    /*  test si affichage page de "envoyer une note de frais" */
+    /*  test si affichage page de "Envoyer une note de frais" */
     test('Then it should display NewBill page', () => {
       document.body.innerHTML = NewBillUI()
       /* vérification présence texte "Envoyer une note de frais" à l'écran */
@@ -111,7 +110,9 @@ describe("Given I am connected as an employee", () => {
       expect(handleSubmit).toHaveBeenCalled()
       /* Vérification appel de la méthode updateBill  */
       expect(newBill.updateBill).toHaveBeenCalled()
-
+      /* Vérification que bien redirectionné à la page Mes notes de frais
+      après le clic du bouton envoyé  */
+      expect(screen.getByText('Mes notes de frais')).toBeTruthy() 
     })
 
     describe('When I do not fill fields and I click on send', () => {
@@ -161,8 +162,7 @@ describe("Given I am connected as an employee", () => {
           expect(newBillForm).toBeTruthy()
         })
       })
-    })
-    
+    })    
   })
 
 
@@ -218,16 +218,8 @@ describe("Given I am connected as an employee", () => {
   })
 })
 
-// describe('When I submit a NewBill', () => {
-//   test('Then I should be redirected to the Bills page', () => {
-//     document.body.innerHTML = NewBillUI()
-//     const newBill = new NewBill({ document, onNavigate, store:null, localStorage: window.localStorage })
-//     const form = screen.getByTestId('btn-send-bill')
-//     const handleSubmit = jest.fn(newBill.handleSubmit)
-//     form.addEventListener('submit', handleSubmit)
-//     fireEvent.submit(form)
-//     expect(screen.getByText('Mes notes de frais')).toBeTruthy()
-//   })
-// })
+
+
+
 
 

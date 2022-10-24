@@ -35,24 +35,12 @@ describe("Given I am connected as an employee", () => {
 
     /* Test tri dates ordre décroissant  */
     test("Then bills should be ordered from earliest to latest", () => {
-    //   document.body.innerHTML = BillsUI({ data: bills })
-    //   const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i).map(a => a.innerHTML)
-    //  // const antiChrono = (a, b) => ((a < b) ? 1 : -1)
-     /* date desc  */
-    //  const antiChrono = (a, b) => ((a < b) ? 1 : -1)
-    //   const datesSorted = [...dates].sort(antiChrono)
-    //   /* vérification que l'affichage des dates est par ordre décroissant  */     
-    //   expect(dates).toEqual(datesSorted)
-    
-    /* récupérer les données enregistrées dans l'objet bills pour effectuer le test  */
-    let sortedBills = bills.slice()    
-    /* trie date desc des données par la fonction rowsData  */
-    let billsList = rowsData(bills)
-    /*  trie date desc des données   */
-    sortedBills.map((bill) => (bill.date = new Date(bill.date)))
-    sortedBills = sortedBills.sort((a, b) => b.date - a.date)    
-    /* vérification correspondante dates est  bien trié pr ordre décroissant  */  
-    expect(billsList).toEqual(sortedBills) 
+      document.body.innerHTML = BillsUI({ data: bills })
+      const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i).map((a) => a.innerHTML);
+      const antiChrono = (a, b) => (a < b ? 1 : -1);
+      const datesSorted = [...dates].sort(antiChrono);
+      /* vérification affichage dates par ordre décroissant   */
+      expect(dates).toEqual(datesSorted);
     })
 
     /* Test d'intégration GET du mock API*/
@@ -72,7 +60,7 @@ describe("Given I am connected as an employee", () => {
       expect(billsCount).toEqual(4)
     })
     
-    /* test action et affichage modale quand clic bouton "nouvelle note de frais" */
+    /* action et affichage modale quand clic bouton "nouvelle note de frais" */
     describe("When I click on new bill button ", () => {
       test("Then a modal should open", () => {
         const onNavigate = (pathname) => {document.body.innerHTML = ROUTES({ pathname, }); };
@@ -80,7 +68,7 @@ describe("Given I am connected as an employee", () => {
         Object.defineProperty(window, "localStorage", {value: localStorageMock, });
         window.localStorage.setItem("user", JSON.stringify({ type: "Employee",}));
         document.body.innerHTML = BillsUI({data: bills,});
-        const newBill = new Bills({ document, onNavigate, firestore: null, bills, localStorage: localStorageMock})          
+        const newBill = new Bills({ document, onNavigate, store: null, bills, localStorage: localStorageMock})          
         const handleClickNewBill = jest.fn((e) => newBill.handleClickNewBill(e, bills)) 
         const iconNewBill = screen.getByTestId("btn-new-bill");
         iconNewBill.addEventListener("click", handleClickNewBill);
