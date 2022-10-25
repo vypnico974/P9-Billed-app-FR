@@ -7,7 +7,7 @@ import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
 import BillsUI from "../views/BillsUI";
 import mockStore from "../__mocks__/store.js"
-import { localStorageMock } from "../__mocks__/localStorage.js"
+import {sessionStorageMock} from "../__mocks__/sessionStorage.js"
 import { ROUTES, ROUTES_PATH } from "../constants/routes"
 import router from "../app/Router.js"
 
@@ -22,24 +22,22 @@ describe("Given I am connected as an employee", () => {
       /* vérification présence texte "Envoyer une note de frais" à l'écran */
       expect(screen.getAllByText("Envoyer une note de frais")).toBeTruthy()
     })
-
-    beforeEach(() => {
+    /* Test surbrillance de l'icône mail  */
+    test("Then mail icon in vertical layout should be highlighted", async () => {
       jest.spyOn(mockStore, "bills")
-      Object.defineProperty(window,'localStorage',{ value: localStorageMock })
-      window.localStorage.setItem('user', JSON.stringify({type: 'Employee'}))
+      sessionStorageMock('Employee')
       document.body.innerHTML='<div id="root"></div>'
       router()
       window.onNavigate(ROUTES_PATH.NewBill)
-    })
-
-     /* Test surbrillance de l'icône mail  */
-     test("Then mail icon in vertical layout should be highlighted", async () => {
       await waitFor(() => screen.getByTestId('icon-mail'))
-      const windowIcon = screen.getByTestId('icon-mail')
-      /*vérification que le noeud DOM comportant id='icon-mail' comporte la classe active-icon */
-       expect(windowIcon.classList.contains('active-icon')).toBeTruthy()
+      const mailIcon = screen.getByTestId('icon-mail')
+      await waitFor(() => screen.getByTestId('icon-window'))
+      const windowIcon = screen.getByTestId('icon-window')      
+      /*Vérification que le noeud DOM comportant id='icon-mail' comporte la classe active-icon */
+       expect(mailIcon.classList.contains('active-icon')).toBeTruthy()
+      /* Vérification que l'icône window n'est pas en surbrillance  */
+       expect(windowIcon.classList.contains('active-icon')).not.toBeTruthy()
     })
-
     /* Test sélection d'un fichier avec un format valide lors de l'upload dans l'input du justificatif */
     test("Then uploading  a valid file : JPG/JPEG/PNG extension", () => {
       document.body.innerHTML = NewBillUI()
@@ -55,7 +53,6 @@ describe("Given I am connected as an employee", () => {
       /* Vérification de l'objet file correspond au fichier sélectionné */
       expect(fileInput.files[0]).toStrictEqual(file)
     })
-
    /* Test sélection d'un fichier avec un format valide lors de l'upload dans l'input du justificatif */
     test("Then uploading  a invalid file : not JPG/JPEG/PNG extension", () => {
       document.body.innerHTML = NewBillUI()
@@ -71,7 +68,6 @@ describe("Given I am connected as an employee", () => {
       /* Vérification que le champs fileInput est réinitialisé */
       expect(fileInput.value).toBe("")
     })
-
     /* Test d'intégration POST formulaire */
     test("Then clicking on the button should submit the bill form", () => {
       document.body.innerHTML = NewBillUI() 
@@ -110,19 +106,16 @@ describe("Given I am connected as an employee", () => {
       expect(handleSubmit).toHaveBeenCalled()
       /* Vérification appel de la méthode updateBill  */
       expect(newBill.updateBill).toHaveBeenCalled()
-      /* Vérification que bien redirectionné à la page Mes notes de frais
-      après le clic du bouton envoyé  */
+      /* Vérification redirectionné à la page Mes notes de frais après le clic du bouton envoyé  */
       expect(screen.getByText('Mes notes de frais')).toBeTruthy() 
     })
 
-    describe('When I do not fill fields and I click on send', () => {
-      
+    describe('When I do not fill fields and I click on send', () => {      
       describe('When I do not fill field "datepicker"', () => {
         /* Test si le champs  datepicker est vide  */
         test('Then it should stay on newBill page', () => {
           document.body.innerHTML = NewBillUI()
-          const inputDatepicker = screen.getByTestId('datepicker')
-              .value
+          const inputDatepicker = screen.getByTestId('datepicker').value
           expect(inputDatepicker).toBe('')
           const newBillForm = screen.getByTestId('form-new-bill')
           const handleSubmit = jest.fn((e) => e.preventDefault())
@@ -136,8 +129,7 @@ describe("Given I am connected as an employee", () => {
         /* Test si le champs  "amount" est vide  */       
         test('Then it should stay on newBill page', () => {
           document.body.innerHTML = NewBillUI()
-          const inputAmount = screen.getByTestId('amount')
-              .value
+          const inputAmount = screen.getByTestId('amount').value
           expect(inputAmount).toBe('')
           const newBillForm = screen.getByTestId('form-new-bill')
           const handleSubmit = jest.fn((e) => e.preventDefault())
@@ -151,8 +143,7 @@ describe("Given I am connected as an employee", () => {
         /* Test si le champs  "pct" est vide  */
         test('Then it should stay on newBill page', () => {
           document.body.innerHTML = NewBillUI()
-          const inputPct = screen.getByTestId('pct')
-              .value
+          const inputPct = screen.getByTestId('pct').value
           expect(inputPct).toBe('')
           const newBillForm = screen.getByTestId('form-new-bill')
           const handleSubmit = jest.fn((e) => e.preventDefault())
@@ -165,17 +156,14 @@ describe("Given I am connected as an employee", () => {
     })    
   })
 
-
   /* test d'intégration POST */
   describe("When an error occurs on API", () => {
-    /* Test message erreur 500 pour API à l'envoie du formulaire */
+    /* Test message erreur 500 (erreur requête envoyé depuis le navigateur)
+       pour API à l'envoie du formulaire */
     test("fetches error from an API and fails with 500 error", async () => {
       jest.spyOn(mockStore, "bills")
       jest.spyOn(console, "error").mockImplementation(() => {})
-     Object.defineProperty(window, "localStorage", {value: localStorageMock,})
-      window.localStorage.setItem('user', JSON.stringify({
-        type: 'Employee',email: "employee@test.com"
-      }))
+      sessionStorageMock('Employee')
       document.body.innerHTML = `<div id="root"></div>`
       router()
       const onNavigate = (pathname) => {document.body.innerHTML = ROUTES({ pathname })}
@@ -192,14 +180,11 @@ describe("Given I am connected as an employee", () => {
       /*  Vérification que console.error est appelé */
       expect(console.error).toHaveBeenCalled()      
     })
-    /* Test message erreur 404 pour API  */
+    /* Test message erreur 404 (page non trouvé) provenant de l' API  */
     test("fetches bills from an API and fails with 404 message error", async () => {
       jest.spyOn(mockStore, "bills")
       jest.spyOn(console, "error").mockImplementation(() => {})
-      Object.defineProperty(window, "localStorage", {value: localStorageMock,})
-      window.localStorage.setItem('user', JSON.stringify({
-        type: 'Employee',email: "employee@test.com"
-      }))
+      sessionStorageMock('Employee')
       document.body.innerHTML = `<div id="root"></div>`
       mockStore.bills.mockImplementationOnce(() => {
         return {
