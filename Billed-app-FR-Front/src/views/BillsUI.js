@@ -9,7 +9,7 @@ const row = (bill) => {
     <tr>
       <td>${bill.type}</td>
       <td>${bill.name}</td>
-      <td>${formatDate(bill.date)}</td>     
+      <td data-date="${bill.date}">${formatDate(bill.date)}</td>     
       <td>${bill.amount} €</td>
       <td>${bill.status}</td>
       <td>
@@ -19,7 +19,7 @@ const row = (bill) => {
     `)
   }
 
-/* tri dates desc avant creation HTML de bill */
+/* tri dates desc avant affichage de bill */
 const rows = (data) => {
   return data && data.length
     ? data

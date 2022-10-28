@@ -36,10 +36,10 @@ describe("Given I am connected as an employee", () => {
     })
 
     /* Test tri dates ordre décroissant  */
-    test("Then bills should be ordered from earliest to latest", () => {
-     
+    test("Then bills should be ordered from earliest to latest", () => {     
       // document.body.innerHTML = BillsUI({ data: bills })
-      // const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i).map((a) => a.innerHTML);
+      // const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i)
+      // .map((a) => a.dataset.data.innerHTML);
       // const antiChrono = (a, b) => (a < b ? 1 : -1);
       // const datesSorted = [...dates].sort(antiChrono);
       // /* vérification affichage dates par ordre décroissant */
@@ -146,9 +146,10 @@ describe("Given I am connected as an employee", () => {
       expect(billsCount).toEqual(4)
     })
 
-   
+     
     /* Test de la gestion d'erreur venant de l' API */
     describe("When an error occurs on API", () => {
+        /*  Test affichage du message erreur 404*/ 
         test("fetches bills from an API and fails with 404 message error", async () => {
         jest.spyOn(mockStore, "bills")
         sessionStorageMock('Employee')
@@ -164,7 +165,7 @@ describe("Given I am connected as an employee", () => {
         /* vérification présence message d'erreur contenant texte  Erreur 404  */
         expect(message).toBeTruthy()
       })
-      /* Test message erreur 500 */
+      /* Test affichage message erreur 500 */
       test("fetches messages from an API and fails with 500 message error", async () => {
         mockStore.bills.mockImplementationOnce(() => {
           return {

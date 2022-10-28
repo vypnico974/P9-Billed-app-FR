@@ -13,7 +13,6 @@ import router from "../app/Router.js"
 
 jest.mock("../app/store", () => mockStore)
 
-
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
     /*  test si affichage page de "Envoyer une note de frais" */
@@ -52,13 +51,16 @@ describe("Given I am connected as an employee", () => {
       expect(handleChangeFile).toHaveBeenCalled()
       /* Vérification de l'objet file correspond au fichier sélectionné */
       expect(fileInput.files[0]).toStrictEqual(file)
+      // const msgError = screen.getByTestId("error-msg")
+      // expect(msgError.classList.contains('visible')).not.toBeTruthy()
     })
-   /* Test sélection d'un fichier avec un format valide lors de l'upload dans l'input du justificatif */
+   /* Test sélection d'un fichier avec un format invalide lors de l'upload dans l'input du justificatif */
     test("Then uploading  a invalid file : not JPG/JPEG/PNG extension", () => {
       document.body.innerHTML = NewBillUI()
       const onNavigate = (pathname) => {document.body.innerHTML = ROUTES({ pathname })}
       const newBill = new NewBill({ document, onNavigate, store: mockStore, localStorage: window.localStorage })
       const fileInput = screen.getByTestId("file")
+      const msgError = screen.getByTestId("error-msg")
       const handleChangeFile = jest.fn(newBill.handleChangeFile)
       fileInput.addEventListener("change", (e) => handleChangeFile(e)) 
       const file = new File(["tested file"], "invalidFile.pdf", { type: "application/pdf" })
@@ -67,6 +69,9 @@ describe("Given I am connected as an employee", () => {
       expect(handleChangeFile).toHaveBeenCalled()
       /* Vérification que le champs fileInput est réinitialisé */
       expect(fileInput.value).toBe("")
+      /* Vérifier que le message d'erreur s'affiche  */
+      expect(msgError.classList.contains('visible')).toBeTruthy()
+      
     })
     /* Test d'intégration POST formulaire */
     test("Then clicking on the button should submit the bill form", () => {

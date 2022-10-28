@@ -25,7 +25,7 @@ export default class NewBill {
     formData.append('file', file)
     formData.append('email', email)
 
-    /* récupérer l'extension du fichier   */
+    /* récupérer l'extension du fichier en minuscule  */
     const fileExtension = fileName.split(".")[fileName.split(".").length-1].toLowerCase()
      /* si l'extension est au format autorisé. */
     if(fileExtension ==="jpg" || fileExtension ==="jpeg" || fileExtension ==="png"){ 
