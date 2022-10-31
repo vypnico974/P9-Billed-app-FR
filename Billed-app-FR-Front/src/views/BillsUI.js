@@ -9,7 +9,7 @@ const row = (bill) => {
     <tr>
       <td>${bill.type}</td>
       <td>${bill.name}</td>
-      <td data-date="${bill.date}">${formatDate(bill.date)}</td>     
+      <td>${formatDate(bill.date)}</td>     
       <td>${bill.amount} €</td>
       <td>${bill.status}</td>
       <td>
@@ -24,6 +24,7 @@ const rows = (data) => {
   return data && data.length
     ? data
         .sort((a, b) => new Date(b.date) - new Date(a.date))
+        // .sort((a, b) => new Date(a.date) - new Date(b.date))
         .map((bill) => row(bill))
         .join("")
     : [];

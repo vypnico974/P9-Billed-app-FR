@@ -156,6 +156,10 @@ export default class {
     bills.forEach(bill => {
       $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
     })
+    // /* autre solution pour pourvoir déplier plusieurs listes, et consulter les tickets de chacune des deux listes. */    */
+    // bills.forEach(bill => {
+    //   $(`#status-bills-container${this.index} #open-bill${bill.id}`).on("click", (e) => this.handleEditTicket(e, bill, bills))
+    // })
 
     return bills
 

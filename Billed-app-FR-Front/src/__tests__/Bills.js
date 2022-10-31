@@ -39,22 +39,18 @@ describe("Given I am connected as an employee", () => {
     test("Then bills should be ordered from earliest to latest", () => {     
       // document.body.innerHTML = BillsUI({ data: bills })
       // const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i)
-      // .map((a) => a.dataset.data.innerHTML);
-      // const antiChrono = (a, b) => (a < b ? 1 : -1);
-      // const datesSorted = [...dates].sort(antiChrono);
-      // /* vérification affichage dates par ordre décroissant */
-      // expect(dates).toEqual(datesSorted);
-
+      // .map((a) => a.innerHTML);
+      // const antiChrono = (a, b) => (a < b ? 1 : -1); 
       document.body.innerHTML = BillsUI({ data: bills })
       const dates = []
-      /* récupérer les dates de chaque note frais dans un tableau  */
+      /* récupérer les dates de chaque note de frais dans un tableau  */
       bills.forEach(bill => {
         const date = bill.date
         dates.push(date)
       })
        const antiChrono = (a, b) => (a.date < b.date ? -1 : 1)
        const sortDescByDate = [...dates].sort(antiChrono)
-       /* vérification la correspondante des dates est bien trié pr ordre décroissant  */
+       /* vérification la correspondante des dates est bien trié par ordre décroissant  */
        expect(dates).toEqual(sortDescByDate)
     })
 
