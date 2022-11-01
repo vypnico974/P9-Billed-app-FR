@@ -1,15 +1,15 @@
 import VerticalLayout from './VerticalLayout.js'
 import ErrorPage from "./ErrorPage.js"
 import LoadingPage from "./LoadingPage.js"
-
 import Actions from './Actions.js'
+import { formatDate } from '../app/format.js'
 
 const row = (bill) => {
   return (`
     <tr>
       <td>${bill.type}</td>
       <td>${bill.name}</td>
-      <td>${bill.date}</td>
+      <td>${formatDate(bill.date)}</td>   
       <td>${bill.amount} €</td>
       <td>${bill.status}</td>
       <td>
@@ -19,9 +19,17 @@ const row = (bill) => {
     `)
   }
 
+/* tri dates desc avant affichage de bill */
 const rows = (data) => {
-  return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
-}
+  return data && data.length
+    ? data
+        // .sort((a, b) => ((a.date < b.date) ? 1 : -1))
+        .sort((a, b) => (new Date(a.date) < new Date(b.date) ? 1 : -1))
+        .map((bill) => row(bill))
+        .join("")
+    : [];
+};
+
 
 export default ({ data: bills, loading, error }) => {
   
@@ -53,7 +61,7 @@ export default ({ data: bills, loading, error }) => {
       ${VerticalLayout(120)}
       <div class='content'>
         <div class='content-header'>
-          <div class='content-title'> Mes notes de frais </div>
+          <div class='content-title' data-testid='content-title'> Mes notes de frais </div>
           <button type="button" data-testid='btn-new-bill' class="btn btn-primary">Nouvelle note de frais</button>
         </div>
         <div id="data-table">

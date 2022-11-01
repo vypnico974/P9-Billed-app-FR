@@ -1,8 +1,10 @@
 import { ROUTES_PATH } from '../constants/routes.js'
 import Logout from "./Logout.js"
 
+// let formData = new FormData()
+
 export default class NewBill {
-  constructor({ document, onNavigate, store, localStorage }) {
+    constructor({ document, onNavigate, store, localStorage }) {
     this.document = document
     this.onNavigate = onNavigate
     this.store = store
@@ -24,25 +26,41 @@ export default class NewBill {
     const email = JSON.parse(localStorage.getItem("user")).email
     formData.append('file', file)
     formData.append('email', email)
-
+    /* récupérer l'extension du fichier en minuscule   */
+    const fileExtension = fileName.split(".")[fileName.split(".").length-1].toLowerCase()
+     /* si l'extension est au format autorisé. */
+    if(fileExtension ==="jpg" || fileExtension ==="jpeg" || fileExtension ==="png"){ 
+      /* pas d'affichage message erreur de format d'image  */
+      this.document.querySelector(".error-msg").classList.remove("visible")
+    } else {
+      /* affichage message "Formats d'images autorisés : *.jpg, *.jpeg ou *.png."  */
+      this.document.querySelector(".error-msg").classList.add("visible")
+      this.document.querySelector(`input[data-testid="file"]`).value = "";
+      return
+    }
     this.store
-      .bills()
-      .create({
-        data: formData,
-        headers: {
-          noContentType: true
-        }
-      })
-      .then(({fileUrl, key}) => {
-        console.log(fileUrl)
-        this.billId = key
-        this.fileUrl = fileUrl
-        this.fileName = fileName
-      }).catch(error => console.error(error))
+    .bills()
+    .create({
+      data: formData,
+      headers: {
+        noContentType: true
+      }
+    })
+    .then(({fileUrl, key}) => {
+      // console.log(fileUrl)
+      this.billId = key
+      this.fileUrl = fileUrl
+      this.fileName = fileName
+    }).catch(error => console.error(error))
+
+    // formData.append('fileUrl', `justificatifs/${fileName}`)
+    // formData.append('fileName', fileName)
+
+  
   }
   handleSubmit = e => {
     e.preventDefault()
-    console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
+    // console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
     const email = JSON.parse(localStorage.getItem("user")).email
     const bill = {
       email,
@@ -55,13 +73,21 @@ export default class NewBill {
       commentary: e.target.querySelector(`textarea[data-testid="commentary"]`).value,
       fileUrl: this.fileUrl,
       fileName: this.fileName,
-      status: 'pending'
+      status: 'pending'           
     }
-    this.updateBill(bill)
-    this.onNavigate(ROUTES_PATH['Bills'])
+    this.updateBill(bill) 
+    this.onNavigate(ROUTES_PATH['Bills']) 
+    
+    // this.store
+    //   .bills()
+    //   .create({data: bill, headers: {noContentType: true} })  
+    //   .then(() => {
+    //           this.onNavigate(ROUTES_PATH['Bills'])
+    //   })
+  
   }
 
-  // not need to cover this function by tests
+   // not need to cover this function by tests
   updateBill = (bill) => {
     if (this.store) {
       this.store
