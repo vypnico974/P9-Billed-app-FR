@@ -138,7 +138,7 @@ export default class {
      /*e.stopImmediatePropagation() méthode arrête le reste des gestionnaires d'événements d'être exécutés.
     méthode provenant de jquery-3.2.1.slim.min.js:3 (lien dans index.html)
     solution pour :  pourvoir déplier plusieurs listes, et consulter les tickets de chacune des deux listes. */
-    e.stopImmediatePropagation()
+   e.stopImmediatePropagation()
     if (this.counter === undefined || this.index !== index) this.counter = 0
     if (this.index === undefined || this.index !== index) this.index = index
     if (this.counter % 2 === 0) {
@@ -153,13 +153,16 @@ export default class {
       this.counter ++
     }
 
-    bills.forEach(bill => {
-      $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
+     /* autre solution pour pourvoir déplier plusieurs listes, et de consulter les tickets
+      de chacune des deux listes , c'est de limiter la propagation du click au container. */ 
+     bills.forEach(bill => {
+      $(`#status-bills-container${this.index} #open-bill${bill.id}`).on("click", (e) => this.handleEditTicket(e, bill, bills))
     })
-    // /* autre solution pour pourvoir déplier plusieurs listes, et consulter les tickets de chacune des deux listes. */    */
+
     // bills.forEach(bill => {
-    //   $(`#status-bills-container${this.index} #open-bill${bill.id}`).on("click", (e) => this.handleEditTicket(e, bill, bills))
+    //   $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
     // })
+   
 
     return bills
 

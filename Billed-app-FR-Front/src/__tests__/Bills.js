@@ -12,6 +12,7 @@ import {localStorageMock} from "../__mocks__/localStorage.js";
 import mockStore from "../__mocks__/store.js"
 import {sessionStorageMock} from "../__mocks__/sessionStorage.js"
 import router from "../app/Router.js";
+import { formatDate } from "../app/format.js"
 
 
 jest.mock("../app/store", () => mockStore)
@@ -37,21 +38,20 @@ describe("Given I am connected as an employee", () => {
 
     /* Test tri dates ordre décroissant  */
     test("Then bills should be ordered from earliest to latest", () => {     
-      // document.body.innerHTML = BillsUI({ data: bills })
       // const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i)
       // .map((a) => a.innerHTML);
-      // const antiChrono = (a, b) => (a < b ? 1 : -1); 
-      document.body.innerHTML = BillsUI({ data: bills })
-      const dates = []
-      /* récupérer les dates de chaque note de frais dans un tableau  */
-      bills.forEach(bill => {
-        const date = bill.date
-        dates.push(date)
-      })
-       const antiChrono = (a, b) => (a.date < b.date ? -1 : 1)
-       const sortDescByDate = [...dates].sort(antiChrono)
-       /* vérification la correspondante des dates est bien trié par ordre décroissant  */
-       expect(dates).toEqual(sortDescByDate)
+      //  const antiChrono = (a, b) => (a.date < b.date ? -1 : 1)
+      const html = BillsUI({ data: bills })
+      document.body.innerHTML = html
+      /*  à l'écran, affichage dates par le format : 1 à 2 chiffres pour le jour,
+      Une lettre majuscule + 2 lettres minuscule + un point  pour le mois
+      2 chiffres pour l'année  */
+      const dates = screen.getAllByText(/(\d{1,2}\s[A-Za-zÀ-ÖØ-öø-ÿ]{3}\.\s\d{2})/i)
+      .map((a) => a.innerHTML)
+     /* utilisation de l'objet new Date sinon trie alphanumérique à cause du format du mois   */
+      const antiChrono = (a, b) => (new Date(a.date) < new Date(b.date) ? -1 : 1)
+      const datesSorted = [...dates].sort(antiChrono)
+      expect(dates).toEqual(datesSorted)       
     })
 
     /* Test d'intégration GET du mock API*/
