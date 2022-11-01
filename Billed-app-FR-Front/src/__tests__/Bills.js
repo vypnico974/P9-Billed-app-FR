@@ -12,8 +12,6 @@ import {localStorageMock} from "../__mocks__/localStorage.js";
 import mockStore from "../__mocks__/store.js"
 import {sessionStorageMock} from "../__mocks__/sessionStorage.js"
 import router from "../app/Router.js";
-import { formatDate } from "../app/format.js"
-
 
 jest.mock("../app/store", () => mockStore)
 
@@ -54,22 +52,7 @@ describe("Given I am connected as an employee", () => {
       expect(dates).toEqual(datesSorted)       
     })
 
-    /* Test d'intégration GET du mock API*/
-      test("fetches bills from mock API GET", async () => {
-      sessionStorageMock('Employee')
-      document.body.innerHTML='<div id="root"></div>'
-      router()
-      window.onNavigate(ROUTES_PATH.Bills)
-      const onNavigate = (pathname) => { document.body.innerHTML = ROUTES({ pathname })}
-      const billsList = new Bills({document, onNavigate, store : mockStore, localStorage: null})
-      const bills = await billsList.getBills()
-      document.body.innerHTML = BillsUI({ data: bills })
-      const billsCount  = screen.getByTestId("tbody").childElementCount  
-      /* Vérification si les 4 notes de frais du mock (store.js) sont présents par le nombre
-      d'élément enfants du noeud DOM "tbody" égal à 4 */
-      expect(billsCount).toEqual(4)
-    })
-    
+   
     /* action et affichage modale quand clic bouton "nouvelle note de frais" */
     describe("When I click on new bill button ", () => {
       test("Then a modal should open", () => {
